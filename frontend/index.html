@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Líder Inspeções · Gerador de CV</title>
+<style>
+/* ── RESET & VARS ──────────────────────────────────────── */
+:root {
+  --blue:#25437A; --gold:#BF9000; --gray:#7F7F7F;
+  --lb:#EEF2F8; --border:#e2e4e9; --bg:#f4f5f7;
+  --white:#fff; --text:#1a1a2e; --t2:#555; --t3:#888;
+  --green:#3B6D11; --gbg:#EAF3DE;
+  --r:8px; --rl:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+.app{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:230px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.content{flex:1;overflow-y:auto;padding:24px 28px;}
+
+/* ── SIDEBAR ────────────────────────────────────────────── */
+.s-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:30px;height:30px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
+.brand-name{font-size:13px;font-weight:700;color:var(--blue);}
+.brand-sub{font-size:10px;color:var(--t3);}
+.s-nav{padding:12px 8px;flex:1;overflow-y:auto;}
+.s-label{font-size:10px;color:var(--t3);padding:8px 8px 4px;text-transform:uppercase;letter-spacing:.06em;}
+.nav-btn{width:100%;text-align:left;border:none;background:none;cursor:pointer;padding:8px 10px;border-radius:var(--r);font-size:13px;color:var(--t2);display:flex;align-items:center;gap:9px;transition:all .15s;font-family:inherit;}
+.nav-btn:hover{background:var(--bg);color:var(--text);}
+.nav-btn.active{background:var(--lb);color:var(--blue);font-weight:600;}
+.rec-item{padding:8px 10px;border-radius:var(--r);cursor:pointer;transition:background .15s;}
+.rec-item:hover{background:var(--bg);}
+.rec-name{font-size:12px;font-weight:600;color:var(--text);}
+.rec-role{font-size:10px;color:var(--t3);}
+
+/* ── TOPBAR ─────────────────────────────────────────────── */
+.topbar{padding:14px 28px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-title{font-size:16px;font-weight:700;color:var(--text);}
+.actions{display:flex;gap:8px;}
+.btn{border:1px solid var(--border);background:var(--white);padding:8px 16px;border-radius:var(--r);font-size:13px;cursor:pointer;color:var(--t2);transition:all .15s;font-family:inherit;font-weight:500;}
+.btn:hover{background:var(--bg);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-p{background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn-p:hover{background:#1d3561;}
+.btn-g{background:var(--gold);color:#fff;border-color:var(--gold);}
+.btn-g:hover{background:#9e7700;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+
+/* ── PANELS ─────────────────────────────────────────────── */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── CARDS ──────────────────────────────────────────────── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:20px 24px;margin-bottom:16px;}
+.card-title{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;border-bottom:2px solid var(--gold);padding-bottom:6px;margin-bottom:16px;}
+
+/* ── FORM ───────────────────────────────────────────────── */
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.f-full{grid-column:1/-1;}
+.f-group{display:flex;flex-direction:column;gap:5px;}
+.f-label{font-size:11px;font-weight:600;color:var(--t2);}
+input[type=text],textarea,select{border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;font-size:13px;font-family:inherit;color:var(--text);background:var(--white);width:100%;transition:border-color .2s;}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--blue);}
+textarea{resize:vertical;line-height:1.6;}
+
+/* ── UPLOAD / PASTE ZONE ────────────────────────────────── */
+.paste-zone{border:2px dashed var(--border);border-radius:var(--rl);padding:28px 20px;text-align:center;margin-bottom:14px;transition:all .2s;cursor:pointer;}
+.paste-zone:hover{border-color:var(--blue);background:var(--lb);}
+.pz-icon{font-size:32px;margin-bottom:8px;}
+.pz-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.pz-sub{font-size:12px;color:var(--t3);}
+
+/* ── AI BAR ─────────────────────────────────────────────── */
+.ai-bar{background:var(--lb);border:1px solid #B5D4F4;border-radius:var(--r);padding:12px 16px;display:none;align-items:center;gap:12px;margin-bottom:14px;}
+.ai-bar.show{display:flex;}
+.spinner{width:16px;height:16px;border:2px solid #B5D4F4;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-txt{font-size:13px;color:var(--blue);font-weight:600;}
+
+/* ── BANNERS ────────────────────────────────────────────── */
+.banner{border-radius:var(--r);padding:12px 16px;display:none;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;}
+.banner.show{display:flex;}
+.b-ok{background:var(--gbg);border:1px solid #C0DD97;color:var(--green);}
+.b-err{background:#FCEBEB;border:1px solid #F09595;color:#A32D2D;}
+.b-info{background:var(--lb);border:1px solid #B5D4F4;color:var(--blue);}
+
+/* ── TAGS ───────────────────────────────────────────────── */
+.tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{display:inline-flex;align-items:center;gap:5px;background:var(--lb);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--blue);font-weight:600;}
+.tag-x{cursor:pointer;color:var(--gray);font-size:15px;line-height:1;}
+.tag-x:hover{color:#c00;}
+.tag-in{border:1px dashed var(--border);border-radius:20px;padding:4px 12px;font-size:12px;background:none;color:var(--text);width:130px;font-family:inherit;}
+.tag-in:focus{outline:none;border-color:var(--blue);}
+
+/* ── EXP CARDS ──────────────────────────────────────────── */
+.exp-card{border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;}
+.exp-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.exp-co{font-size:13px;font-weight:700;color:var(--gold);}
+.exp-role{font-size:13px;font-weight:700;color:var(--blue);}
+.exp-per{font-size:11px;color:var(--t3);margin-top:2px;}
+.exp-bullets{padding-left:14px;}
+.exp-b{font-size:12px;color:var(--t2);line-height:1.7;list-style:disc;}
+.add-exp{width:100%;border:1px dashed var(--border);background:none;border-radius:var(--r);padding:10px;font-size:13px;color:var(--t3);cursor:pointer;font-family:inherit;transition:all .15s;}
+.add-exp:hover{background:var(--bg);color:var(--text);}
+
+/* ── STATS ──────────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;}
+.stat-n{font-size:28px;font-weight:700;color:var(--text);line-height:1;}
+.stat-l{font-size:11px;color:var(--t3);margin-top:4px;}
+
+/* ── TABLE ──────────────────────────────────────────────── */
+.i-table{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;}
+.i-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:14px;transition:background .15s;}
+.i-row:last-child{border-bottom:none;}
+.i-row:hover{background:var(--bg);}
+.av{width:38px;height:38px;border-radius:50%;background:var(--lb);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--blue);flex-shrink:0;}
+.i-info{flex:1;}
+.i-name{font-size:13px;font-weight:700;color:var(--text);}
+.i-spec{font-size:11px;color:var(--t3);margin-top:1px;}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:3px;font-weight:600;}
+.b-ok2{background:var(--gbg);color:var(--green);}
+.b-pend{background:#FAEEDA;color:#854F0B;}
+.i-acts{display:flex;gap:6px;}
+
+/* ── CONFIG PANEL ───────────────────────────────────────── */
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.cfg-row:last-child{border-bottom:none;}
+.cfg-label{font-size:13px;font-weight:600;color:var(--text);}
+.cfg-sub{font-size:12px;color:var(--t3);margin-top:2px;}
+.cfg-in{width:340px;}
+.cfg-status{font-size:12px;font-weight:600;}
+.cfg-ok{color:var(--green);}
+.cfg-err{color:#A32D2D;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── SIDEBAR ─────────────────────────────────────────── -->
+<div class="sidebar">
+  <div class="s-head">
+    <div class="brand">
+      <div class="brand-icon">L</div>
+      <div>
+        <div class="brand-name">Líder Inspeções</div>
+        <div class="brand-sub">Quality Experts · RH</div>
+      </div>
+    </div>
+  </div>
+  <div class="s-nav">
+    <div class="s-label">Menu</div>
+    <button class="nav-btn active" data-panel="novo">
+      <span>＋</span> Novo CV
+    </button>
+    <button class="nav-btn" data-panel="banco">
+      <span>◉</span> Banco de Inspetores
+    </button>
+    <button class="nav-btn" data-panel="config">
+      <span>⚙</span> Configurações
+    </button>
+    <div class="s-label" style="margin-top:8px;">Recentes</div>
+    <div id="sidebar-rec"></div>
+  </div>
+</div>
+
+<!-- ── MAIN ────────────────────────────────────────────── -->
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="topbar-title">Novo CV</span>
+    <div class="actions">
+      <button class="btn" onclick="show('banco')">Ver todos</button>
+      <button class="btn btn-g" id="btn-pdf" onclick="gerarPDF()" disabled>⬇ Gerar PDF Líder</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- NOVO CV ──────────────────────────────────────────── -->
+    <div class="panel active" id="panel-novo">
+
+      <div class="paste-zone" onclick="document.getElementById('cv-raw').focus()">
+        <div class="pz-icon">📋</div>
+        <div class="pz-title">Cole o currículo bruto abaixo</div>
+        <div class="pz-sub">A IA extrai e preenche os campos automaticamente</div>
+      </div>
+
+      <textarea id="cv-raw" style="height:130px;margin-bottom:8px;" placeholder="Cole o currículo completo aqui — pode ser de qualquer formato. A IA irá extrair nome, cargo, cidade, experiências, formação e certificações."></textarea>
+
+      <div class="card" style="margin-bottom:12px;padding:14px 18px;">
+        <div class="f-group">
+          <span class="f-label">Escopo da vaga (opcional — alinha o perfil naturalmente)</span>
+          <textarea id="escopo" style="height:70px;" placeholder="Cole aqui o escopo da posição se quiser alinhar o CV à vaga..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-p" style="width:100%;margin-bottom:14px;padding:11px;" onclick="extrair()">
+        ✦ Extrair com IA e preencher formulário
+      </button>
+
+      <div class="ai-bar" id="ai-bar">
+        <div class="spinner"></div>
+        <span class="ai-txt" id="ai-txt">Analisando currículo...</span>
+      </div>
+      <div class="banner b-ok" id="b-ok"><span style="font-size:18px;">✓</span><span>Dados extraídos! Revise e clique em "Gerar PDF Líder".</span></div>
+      <div class="banner b-err" id="b-err"><span style="font-size:18px;">✗</span><span id="err-txt">Erro ao extrair dados.</span></div>
+
+      <!-- IDENTIFICAÇÃO -->
+      <div class="card">
+        <div class="card-title">Identificação</div>
+        <div class="f-grid">
+          <div class="f-group f-full">
+            <span class="f-label">Nome completo</span>
+            <input type="text" id="f-nome" placeholder="Nome completo do profissional"/>
+          </div>
+          <div class="f-group">
+            <span class="f-label">Cidade – Estado</span>
+            <input type="text" id="f-cidade" placeholder="Ex: Serra – ES"/>
+          </div>
+          <div class="f-group">
+            <span class="f-label">Anos de experiência</span>
+            <input type="text" id="f-anos" placeholder="Ex: 16 anos"/>
+          </div>
+          <div class="f-group f-full">
+            <span class="f-label">Título profissional</span>
+            <input type="text" id="f-titulo" placeholder="Ex: Inspetor Técnico Sênior | Pipeline, Subsea | Oil & Gas"/>
+          </div>
+          <div class="f-group f-full">
+            <span class="f-label">Perfil profissional</span>
+            <textarea id="f-perfil" style="height:90px;" placeholder="Parágrafo resumindo experiência, especialidades e certificações..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPETÊNCIAS -->
+      <div class="card">
+        <div class="card-title">Competências Técnicas</div>
+        <div class="tags" id="tags-wrap">
+          <input class="tag-in" id="tag-in" placeholder="+ Adicionar..." onkeydown="addTag(event)"/>
+        </div>
+      </div>
+
+      <!-- EXPERIÊNCIAS -->
+      <div class="card">
+        <div class="card-title">Histórico Profissional</div>
+        <div id="exp-wrap"></div>
+        <button class="add-exp" onclick="addExp()">+ Adicionar experiência</button>
+      </div>
+
+      <!-- FORMAÇÃO -->
+      <div class="card">
+        <div class="card-title">Formação & Certificações</div>
+        <div class="f-grid">
+          <div class="f-group f-full">
+            <span class="f-label">Formação acadêmica</span>
+            <input type="text" id="f-form" placeholder="Ex: Tecnólogo em Soldagem – FATEC (2015)"/>
+          </div>
+          <div class="f-group f-full">
+            <span class="f-label">Certificações</span>
+            <input type="text" id="f-cert" placeholder="Ex: CSWIP L2 | BGAS-CSWIP G2 | AMPP CIP 1 e 2"/>
+          </div>
+          <div class="f-group f-full">
+            <span class="f-label">Clientes principais</span>
+            <input type="text" id="f-clientes" placeholder="Ex: Petrobras • TechnipFMC • Equinor • Vale"/>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:20px;"></div>
+    </div>
+
+    <!-- BANCO ─────────────────────────────────────────────── -->
+    <div class="panel" id="panel-banco">
+      <div class="stats">
+        <div class="stat"><div class="stat-n" id="s-tot">0</div><div class="stat-l">Inspetores cadastrados</div></div>
+        <div class="stat"><div class="stat-n" style="color:var(--green);" id="s-ok">0</div><div class="stat-l">CVs gerados</div></div>
+        <div class="stat"><div class="stat-n" style="color:#854F0B;" id="s-pend">0</div><div class="stat-l">Pendentes</div></div>
+        <div class="stat"><div class="stat-n" style="color:var(--blue);" id="s-mes">0</div><div class="stat-l">Gerados este mês</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-size:15px;font-weight:700;">Todos os inspetores</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm" onclick="exportarCSV()">⬇ Exportar CSV</button>
+          <button class="btn btn-p btn-sm" onclick="show('novo')">+ Novo CV</button>
+        </div>
+      </div>
+      <div class="i-table" id="i-table"></div>
+    </div>
+
+    <!-- CONFIG ────────────────────────────────────────────── -->
+    <div class="panel" id="panel-config">
+      <div class="card">
+        <div class="card-title">Configurações do App</div>
+
+        <div class="cfg-row">
+          <div>
+            <div class="cfg-label">URL do Backend (Railway)</div>
+            <div class="cfg-sub">Endereço da API Python que gera os PDFs</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="text" class="cfg-in" id="cfg-api" placeholder="https://seu-app.railway.app"/>
+            <span class="cfg-status" id="cfg-api-status"></span>
+          </div>
+        </div>
+
+        <div class="cfg-row">
+          <div>
+            <div class="cfg-label">Status da conexão</div>
+            <div class="cfg-sub">Testa se o backend está online</div>
+          </div>
+          <button class="btn btn-sm" onclick="testarConexao()">Testar conexão</button>
+        </div>
+
+        <div class="cfg-row">
+          <div>
+            <div class="cfg-label">Modo de extração</div>
+            <div class="cfg-sub">A IA extrai os dados via backend</div>
+          </div>
+          <span class="cfg-status cfg-ok">✓ Ativo via API</span>
+        </div>
+
+        <div style="margin-top:20px;">
+          <button class="btn btn-p" onclick="salvarConfig()">Salvar configurações</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Guia de Deploy — Passo a Passo</div>
+        <div style="font-size:13px;line-height:1.9;color:var(--t2);">
+          <strong style="color:var(--blue);">1. Backend (Railway)</strong><br>
+          • Acesse <a href="https://railway.app" target="_blank">railway.app</a> → New Project → Deploy from GitHub<br>
+          • Suba a pasta <code>/backend</code> do projeto<br>
+          • Em Variables, adicione: <code>ANTHROPIC_API_KEY=sua_chave</code><br>
+          • Railway detecta o Procfile e sobe automaticamente<br>
+          • Copie a URL gerada e cole acima em "URL do Backend"<br><br>
+
+          <strong style="color:var(--blue);">2. Frontend (Vercel)</strong><br>
+          • Acesse <a href="https://vercel.com" target="_blank">vercel.com</a> → New Project → Import do GitHub<br>
+          • Suba o arquivo <code>index.html</code> da pasta <code>/frontend</code><br>
+          • Em Environment Variables, adicione: <code>VITE_API_URL=url_do_railway</code><br>
+          • Deploy automático em ~1 minuto<br><br>
+
+          <strong style="color:var(--blue);">3. Chave da Anthropic</strong><br>
+          • Acesse <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
+          • API Keys → Create Key → copie e cole no Railway<br>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+const STATE = {
+  api: localStorage.getItem('lider_api_url') || '',
+  inspetores: JSON.parse(localStorage.getItem('lider_inspetores') || '[]'),
+  tags: [],
+  exps: [],
+  cvData: null,
+};
+
+// ── NAVIGATION ─────────────────────────────────────────────
+const TITLES = {novo:'Novo CV', banco:'Banco de Inspetores', config:'Configurações'};
+function show(panel) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + panel).classList.add('active');
+  document.querySelector(`[data-panel="${panel}"]`)?.classList.add('active');
+  document.getElementById('topbar-title').textContent = TITLES[panel] || '';
+  if (panel === 'banco') renderBanco();
+  if (panel === 'config') document.getElementById('cfg-api').value = STATE.api;
+}
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => show(btn.dataset.panel));
+});
+
+// ── TAGS ───────────────────────────────────────────────────
+function renderTags() {
+  const wrap = document.getElementById('tags-wrap');
+  const inp  = document.getElementById('tag-in');
+  wrap.innerHTML = '';
+  STATE.tags.forEach((t, i) => {
+    const el = document.createElement('span');
+    el.className = 'tag';
+    el.innerHTML = `${t} <span class="tag-x" onclick="removeTag(${i})">×</span>`;
+    wrap.appendChild(el);
+  });
+  wrap.appendChild(inp);
+}
+function addTag(e) {
+  if (e.key === 'Enter' && e.target.value.trim()) {
+    STATE.tags.push(e.target.value.trim());
+    e.target.value = '';
+    renderTags();
+  }
+}
+function removeTag(i) { STATE.tags.splice(i, 1); renderTags(); }
+
+// ── EXPERIENCES ────────────────────────────────────────────
+function renderExps() {
+  document.getElementById('exp-wrap').innerHTML = STATE.exps.map((e, i) => `
+    <div class="exp-card">
+      <div class="exp-head">
+        <div>
+          <div class="exp-co">${e.empresa}</div>
+          <div class="exp-role">${e.cargo}</div>
+          <div class="exp-per">${e.periodo}</div>
+        </div>
+        <button class="btn btn-sm" onclick="removeExp(${i})" style="color:#c00;border-color:#fcc;">✕</button>
+      </div>
+      <ul class="exp-bullets">${e.bullets.map(b => `<li class="exp-b">${b}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+function addExp() {
+  STATE.exps.push({
+    empresa: 'Nova Empresa | Cliente',
+    cargo: 'Cargo / Função',
+    periodo: 'MM/AAAA – MM/AAAA',
+    bullets: ['Descrição das atividades realizadas']
+  });
+  renderExps();
+}
+function removeExp(i) { STATE.exps.splice(i, 1); renderExps(); }
+
+// ── POPULATE FORM FROM DATA ─────────────────────────────────
+function populateForm(data) {
+  document.getElementById('f-nome').value    = data.nome    || '';
+  document.getElementById('f-cidade').value  = data.cidade  || '';
+  document.getElementById('f-titulo').value  = data.titulo  || '';
+  document.getElementById('f-perfil').value  = data.perfil  || '';
+  document.getElementById('f-form').value    = (data.formacao || []).map(f => `${f.curso} – ${f.instituicao} (${f.ano})`).join(' | ');
+  document.getElementById('f-cert').value    = (data.certificacoes || []).join(' | ');
+  document.getElementById('f-clientes').value= (data.clientes || []).join(' • ');
+  STATE.tags = data.competencias || [];
+  STATE.exps = data.experiencias || [];
+  STATE.cvData = data;
+  renderTags();
+  renderExps();
+  document.getElementById('btn-pdf').disabled = false;
+}
+
+// ── EXTRACT WITH AI ─────────────────────────────────────────
+const AI_STEPS = [
+  'Analisando estrutura do currículo...',
+  'Identificando nome, cargo e localização...',
+  'Extraindo histórico profissional...',
+  'Mapeando competências técnicas...',
+  'Identificando certificações...',
+  'Finalizando extração...',
+];
+
+async function extrair() {
+  const txt    = document.getElementById('cv-raw').value.trim();
+  const escopo = document.getElementById('escopo').value.trim();
+  if (!txt) { alert('Cole o texto do currículo primeiro.'); return; }
+
+  const api = STATE.api;
+  if (!api) {
+    alert('Configure a URL do backend primeiro em Configurações.');
+    show('config');
+    return;
+  }
+
+  document.getElementById('b-ok').classList.remove('show');
+  document.getElementById('b-err').classList.remove('show');
+  document.getElementById('ai-bar').classList.add('show');
+
+  let step = 0;
+  const iv = setInterval(() => {
+    document.getElementById('ai-txt').textContent = AI_STEPS[Math.min(step++, AI_STEPS.length - 1)];
+  }, 600);
+
+  try {
+    const res = await fetch(`${api}/extrair`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cv_texto: txt, escopo_vaga: escopo || null }),
+    });
+
+    clearInterval(iv);
+    document.getElementById('ai-bar').classList.remove('show');
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Erro no servidor');
+    }
+
+    const { data } = await res.json();
+    populateForm(data);
+    document.getElementById('b-ok').classList.add('show');
+
+  } catch (err) {
+    clearInterval(iv);
+    document.getElementById('ai-bar').classList.remove('show');
+    document.getElementById('err-txt').textContent = `Erro: ${err.message}`;
+    document.getElementById('b-err').classList.add('show');
+  }
+}
+
+// ── GERAR PDF ───────────────────────────────────────────────
+async function gerarPDF() {
+  const api = STATE.api;
+  if (!api) { alert('Configure a URL do backend em Configurações.'); show('config'); return; }
+
+  // Monta payload com dados do formulário
+  const payload = {
+    nome:      document.getElementById('f-nome').value,
+    cidade:    document.getElementById('f-cidade').value,
+    titulo:    document.getElementById('f-titulo').value,
+    perfil:    document.getElementById('f-perfil').value,
+    competencias: STATE.tags,
+    clientes:  document.getElementById('f-clientes').value.split('•').map(s => s.trim()).filter(Boolean),
+    experiencias: STATE.exps,
+    formacao:  [{ curso: document.getElementById('f-form').value, instituicao: '', ano: '' }],
+    certificacoes: document.getElementById('f-cert').value.split('|').map(s => s.trim()).filter(Boolean),
+    cursos: [],
+  };
+
+  if (!payload.nome) { alert('Preencha pelo menos o nome do profissional.'); return; }
+
+  const btn = document.getElementById('btn-pdf');
+  btn.disabled = true;
+  btn.textContent = '⏳ Gerando PDF...';
+
+  try {
+    const res = await fetch(`${api}/gerar-pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error('Erro ao gerar PDF');
+
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `CV_${payload.nome.replace(/ /g, '_')}_Lider.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Salva no banco local
+    salvarInspetor(payload);
+
+  } catch (err) {
+    alert(`Erro ao gerar PDF: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬇ Gerar PDF Líder';
+  }
+}
+
+// ── BANCO DE INSPETORES ─────────────────────────────────────
+function salvarInspetor(payload) {
+  const existing = STATE.inspetores.findIndex(i => i.nome === payload.nome);
+  const entry = {
+    nome: payload.nome,
+    cargo: payload.titulo.split('|')[0].trim(),
+    cidade: payload.cidade,
+    status: 'ok',
+    ini: payload.nome.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase(),
+    data: new Date().toLocaleDateString('pt-BR'),
+    data_obj: new Date().toISOString(),
+  };
+  if (existing >= 0) STATE.inspetores[existing] = entry;
+  else STATE.inspetores.unshift(entry);
+  localStorage.setItem('lider_inspetores', JSON.stringify(STATE.inspetores));
+  renderSidebar();
+}
+
+function renderBanco() {
+  const list = STATE.inspetores;
+  const ok   = list.filter(i => i.status === 'ok').length;
+  const pend = list.filter(i => i.status !== 'ok').length;
+  const mes  = list.filter(i => {
+    if (!i.data_obj) return false;
+    const d = new Date(i.data_obj);
+    const n = new Date();
+    return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
+  }).length;
+
+  document.getElementById('s-tot').textContent  = list.length;
+  document.getElementById('s-ok').textContent   = ok;
+  document.getElementById('s-pend').textContent = pend;
+  document.getElementById('s-mes').textContent  = mes;
+
+  if (list.length === 0) {
+    document.getElementById('i-table').innerHTML = '<div style="padding:32px;text-align:center;color:var(--t3);font-size:13px;">Nenhum inspetor cadastrado ainda. Gere o primeiro CV!</div>';
+    return;
+  }
+
+  document.getElementById('i-table').innerHTML = list.map((i, idx) => `
+    <div class="i-row">
+      <div class="av">${i.ini || '??'}</div>
+      <div class="i-info">
+        <div class="i-name">${i.nome}</div>
+        <div class="i-spec">${i.cargo} · ${i.cidade}</div>
+        <span class="badge ${i.status === 'ok' ? 'b-ok2' : 'b-pend'}">${i.status === 'ok' ? 'CV gerado' : 'Pendente'} ${i.data ? '· ' + i.data : ''}</span>
+      </div>
+      <div class="i-acts">
+        <button class="btn btn-sm" onclick="carregarInspetor(${idx})">Editar</button>
+        <button class="btn btn-sm" style="color:var(--blue);border-color:var(--blue);" onclick="gerarPDFInspetor(${idx})">PDF ↓</button>
+        <button class="btn btn-sm" style="color:#c00;border-color:#fcc;" onclick="removerInspetor(${idx})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function carregarInspetor(idx) {
+  const i = STATE.inspetores[idx];
+  document.getElementById('f-nome').value   = i.nome;
+  document.getElementById('f-cidade').value = i.cidade;
+  document.getElementById('f-titulo').value = i.cargo;
+  show('novo');
+}
+
+function removerInspetor(idx) {
+  if (!confirm('Remover este inspetor do banco?')) return;
+  STATE.inspetores.splice(idx, 1);
+  localStorage.setItem('lider_inspetores', JSON.stringify(STATE.inspetores));
+  renderBanco();
+}
+
+function gerarPDFInspetor(idx) {
+  carregarInspetor(idx);
+  setTimeout(gerarPDF, 200);
+}
+
+function exportarCSV() {
+  if (!STATE.inspetores.length) { alert('Nenhum inspetor cadastrado.'); return; }
+  const header = 'Nome,Cargo,Cidade,Status,Data\n';
+  const rows   = STATE.inspetores.map(i => `"${i.nome}","${i.cargo}","${i.cidade}","${i.status}","${i.data||''}"`).join('\n');
+  const blob   = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+  const url    = URL.createObjectURL(blob);
+  const a      = document.createElement('a');
+  a.href = url; a.download = 'inspetores_lider.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderSidebar() {
+  document.getElementById('sidebar-rec').innerHTML = STATE.inspetores.slice(0, 6).map((i, idx) => `
+    <div class="rec-item" onclick="carregarInspetor(${idx})">
+      <div class="rec-name">${i.nome.split(' ').slice(0, 2).join(' ')}</div>
+      <div class="rec-role">${i.cargo.split('|')[0].trim()}</div>
+    </div>`).join('');
+}
+
+// ── CONFIG ──────────────────────────────────────────────────
+function salvarConfig() {
+  STATE.api = document.getElementById('cfg-api').value.trim().replace(/\/$/, '');
+  localStorage.setItem('lider_api_url', STATE.api);
+  alert('✓ Configurações salvas!');
+}
+
+async function testarConexao() {
+  const api = document.getElementById('cfg-api').value.trim().replace(/\/$/, '');
+  const el  = document.getElementById('cfg-api-status');
+  el.textContent = 'Testando...';
+  el.className   = 'cfg-status';
+  try {
+    const res = await fetch(`${api}/`, { signal: AbortSignal.timeout(5000) });
+    if (res.ok) {
+      el.textContent = '✓ Online';
+      el.className   = 'cfg-status cfg-ok';
+    } else {
+      throw new Error('status ' + res.status);
+    }
+  } catch {
+    el.textContent = '✗ Offline';
+    el.className   = 'cfg-status cfg-err';
+  }
+}
+
+// ── INIT ────────────────────────────────────────────────────
+renderSidebar();
+renderExps();
+renderTags();
+</script>
+</body>
+</html>
