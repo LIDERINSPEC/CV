@@ -1,0 +1,80 @@
+{
+  "_comment": "Fonte única de tempos do Reels Safety Day 2026. Tempos em segundos. Quando as falas reais forem geradas, ajuste start/end de cada legenda ao áudio e rode o pipeline novamente.",
+  "duration": 90.0,
+  "fps": 30,
+  "size": [1080, 1920],
+  "scenes": [
+    {"id": "s01", "start": 0.0,  "end": 8.0,  "title": "É só uma olhadinha",
+     "shot": "Plano geral da usinagem → aproximação suave ao operador junto ao centro CNC fechado. Celular vibra; close breve na notificação sem texto legível. Ele olha o celular e perde o foco na máquina."},
+    {"id": "s02", "start": 8.0,  "end": 15.0, "title": "A aproximação",
+     "shot": "Lia percebe a distração e entra pela frente, no campo de visão do operador, a uma distância respeitosa. Plano médio dos dois."},
+    {"id": "s03", "start": 15.0, "end": 34.0, "title": "O cuidado",
+     "shot": "Two-shot com o CNC fechado ao fundo. Lia fala com calma e aponta a placa do ponto seguro; o operador guarda o celular no bolso."},
+    {"id": "s04", "start": 34.0, "end": 44.0, "title": "A conexão humana",
+     "shot": "Contraplano no operador agradecendo; close sutil em Lia na resposta. Pausa e expressão de reconhecimento."},
+    {"id": "s05", "start": 44.0, "end": 50.0, "title": "O gancho",
+     "shot": "Operador reflete; Lia sorri discretamente. Plano médio."},
+    {"id": "s06", "start": 50.0, "end": 69.0, "title": "O convite",
+     "shot": "Lia em plano médio, entusiasmada e serena, com espaço livre no terço superior do quadro para os cartões de informação."},
+    {"id": "s07", "start": 69.0, "end": 78.0, "title": "O aprendizado",
+     "shot": "Operador sorri, mão no bolso com o celular guardado, e volta o olhar ao painel do CNC. Lia: 'Isso aí!'"},
+    {"id": "s08", "start": 78.0, "end": 84.0, "title": "Chamada direta",
+     "shot": "Lia olha para a câmera em plano médio-próximo; transição diagonal para a identidade Líder."},
+    {"id": "end", "start": 84.0, "end": 90.0, "title": "Tela final",
+     "shot": "Tela final estática (gerada na edição)."}
+  ],
+  "subtitles": [
+    {"start": 2.9,  "end": 5.0,  "who": "OPERADOR", "text": "Enquanto a máquina termina…"},
+    {"start": 5.0,  "end": 7.4,  "who": "OPERADOR", "text": "dá tempo de responder rapidinho."},
+    {"start": 9.0,  "end": 11.6, "who": "LIA",      "text": "Oi! Posso falar um instante com você?"},
+    {"start": 12.0, "end": 13.2, "who": "OPERADOR", "text": "Claro!"},
+    {"start": 15.6, "end": 17.4, "who": "LIA",      "text": "Sei que sou visitante aqui."},
+    {"start": 17.6, "end": 22.2, "who": "LIA",      "text": "Mas, na Líder, aprendemos que não existe\nnada mais precioso do que a vida."},
+    {"start": 22.6, "end": 25.4, "who": "LIA",      "text": "O celular pode tirar sua atenção\nde um risco."},
+    {"start": 25.7, "end": 28.1, "who": "LIA",      "text": "Guarda enquanto acompanha a operação?"},
+    {"start": 28.4, "end": 33.2, "who": "LIA",      "text": "Se for urgente, peça cobertura\ne use o ponto seguro."},
+    {"start": 34.6, "end": 36.0, "who": "OPERADOR", "text": "Obrigado pelo toque."},
+    {"start": 36.2, "end": 38.8, "who": "OPERADOR", "text": "Você nem é daqui e se preocupou comigo."},
+    {"start": 39.4, "end": 43.4, "who": "LIA",      "text": "Pra cuidar de alguém, a gente não precisa\ntrabalhar na mesma empresa."},
+    {"start": 44.4, "end": 46.4, "who": "OPERADOR", "text": "Mais gente precisava ouvir isso."},
+    {"start": 46.6, "end": 49.4, "who": "OPERADOR", "text": "Segurança é responsabilidade\nde todo mundo, né?"},
+    {"start": 50.3, "end": 51.2, "who": "LIA",      "text": "Exatamente!"},
+    {"start": 51.4, "end": 54.0, "who": "LIA",      "text": "Vem para o Safety Day 2026 da Líder!"},
+    {"start": 54.3, "end": 57.5, "who": "LIA",      "text": "Dia dez de novembro,\ndas nove às dezessete horas,"},
+    {"start": 57.7, "end": 59.2, "who": "LIA",      "text": "no SENAI Barueri."},
+    {"start": 59.5, "end": 61.2, "who": "LIA",      "text": "Presencial e gratuito!"},
+    {"start": 61.6, "end": 64.6, "who": "LIA",      "text": "Especialistas, fornecedores e clientes\nvão discutir"},
+    {"start": 64.7, "end": 68.4, "who": "LIA",      "text": "como construir um ambiente\nindustrial mais seguro."},
+    {"start": 69.5, "end": 70.9, "who": "OPERADOR", "text": "Vou me inscrever!"},
+    {"start": 71.1, "end": 74.6, "who": "OPERADOR", "text": "Mas o celular… só depois,\nno ponto seguro."},
+    {"start": 75.2, "end": 76.3, "who": "LIA",      "text": "Isso aí!"},
+    {"start": 78.5, "end": 80.8, "who": "LIA",      "text": "Inscreva-se pelo link ou QR code."},
+    {"start": 81.0, "end": 83.5, "who": "LIA",      "text": "É gratuito, mas as vagas são limitadas!"}
+  ],
+  "overlays": {
+    "hook":     {"start": 5.6,  "end": 8.0,  "text": "É só uma olhadinha?"},
+    "lower_id": {"start": 10.0, "end": 14.6, "name": "Lia", "role": "Inspetora da Líder"},
+    "info": [
+      {"start": 51.4, "text": "SAFETY DAY 2026"},
+      {"start": 54.3, "text": "10 NOV | 9H ÀS 17H"},
+      {"start": 57.7, "text": "SENAI BARUERI"},
+      {"start": 59.5, "text": "PRESENCIAL E GRATUITO"}
+    ],
+    "info_end": 68.8,
+    "brand_wipe": {"start": 83.4, "end": 84.0}
+  },
+  "endcard": {
+    "start": 84.0,
+    "title": "SAFETY DAY 2026",
+    "date": "10 DE NOVEMBRO | DAS 9H ÀS 17H",
+    "place": "SENAI BARUERI",
+    "tags": "PRESENCIAL • GRATUITO • VAGAS LIMITADAS",
+    "cta": "INSCREVA-SE AGORA",
+    "url_display": "liderinspecoes.com.br/safetyday2026/",
+    "url_qr": "https://liderinspecoes.com.br/safetyday2026/",
+    "signature": "Não existe nada mais precioso do que a vida."
+  },
+  "audio": {
+    "notification_at": 1.7
+  }
+}
